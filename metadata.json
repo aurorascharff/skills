@@ -10,6 +10,6 @@
     "https://nextjs.org/docs/app/api-reference/functions/cache-tag",
     "https://nextjs.org/docs/app/api-reference/functions/cache-life",
     "https://nextjs.org/docs/app/api-reference/functions/update-tag",
-    "https://nextjs.org/docs/app/guides/interactive-apps"
+    "https://github.com/vercel/next.js/pull/94020"
   ]
 }

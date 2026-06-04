@@ -283,3 +283,5 @@ startTransition(async () => {
 `useOptimistic` rolls back automatically if the transition throws.
 
 For non-optimistic pending UI (filters, sort changes, deferred work), use `useTransition` with the `data-pending` pattern in `references/ux-patterns.md`. For success/error feedback rules, see the same reference.
+
+For the deeper picture (coordinating `useTransition`, `useOptimistic`, `useActionState`, `data-pending`, Suspense streaming, and caching across server and client), see the [Interactive Apps guide PR](https://github.com/vercel/next.js/pull/94020) — not merged yet, but the canonical reference until it lands at `nextjs.org/docs/app/guides/interactive-apps`.
