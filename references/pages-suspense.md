@@ -56,7 +56,7 @@ The `<h1>` sits **above** the `params.then()` so it paints instantly. The `Suspe
 
 ### Implicit return inside `.then()`
 
-Use the implicit-return arrow when the callback just renders JSX — `({ id }) => (<PostDetail id={id} />)`. Only switch to a block body with `return` when you need to do work first (destructure with defaults, parse a `searchParams` value, branch on a condition). Keeps the JSX-in-page shape readable and matches how the resolved tree will look.
+Use an implicit-return arrow function when the callback just renders JSX — e.g. `({ id }) => <PostDetail id={id} />`. Only switch to a block body with `return` when you need to do work first (destructure with defaults, parse a `searchParams` value, branch on a condition). This keeps the JSX-in-page shape readable and matches how the resolved tree will look.
 
 ### `searchParams` and combined params
 
