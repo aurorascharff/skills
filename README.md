@@ -1,6 +1,18 @@
-# Next.js App Architecture Skill
+# Skills
 
-An agent skill for Next.js 16+ App Router apps. Packages the patterns from [Component Architecture for React Server Components](https://aurorascharff.no/posts/component-architecture-for-react-server-components/) for AI coding agents.
+A `/skills` directory for agent skills I maintain.
+
+## Install
+
+```bash
+npx skills@latest add aurorascharff/nextjs-app-architecture-skill
+```
+
+## Skills
+
+### `nextjs-app-architecture`
+
+Architecture patterns for Next.js 16+ App Router apps. Packages the patterns from [Component Architecture for React Server Components](https://aurorascharff.no/posts/component-architecture-for-react-server-components/) for AI coding agents.
 
 The five principles from the post:
 
@@ -10,29 +22,24 @@ The five principles from the post:
 - Suspense boundaries go at the page level. The page designs the loading sequence.
 - Client boundaries are leaf nodes. Push `'use client'` as deep as it can go.
 
-Everything else in the skill is additional.
+Skill path: [`skills/nextjs-app-architecture`](skills/nextjs-app-architecture)
 
-## Install
+References load on demand:
 
-```bash
-npx skills install https://github.com/aurorascharff/nextjs-app-architecture-skill
-```
+- `skills/nextjs-app-architecture/references/feature-folders.md`
+- `skills/nextjs-app-architecture/references/queries-actions.md`
+- `skills/nextjs-app-architecture/references/components.md`
+- `skills/nextjs-app-architecture/references/pages-suspense.md`
+- `skills/nextjs-app-architecture/references/cache-components.md`
+- `skills/nextjs-app-architecture/references/ux-patterns.md`
 
-## Layout
+### `friction-log`
 
-`SKILL.md` is always loaded. References load on demand.
+Documents agentic developer experience friction encountered during a development flow. Use when asked to log friction, document a pain point, or capture places where an agent gets stuck by unclear docs, framework behavior, tooling, sandboxing, or stale assumptions.
 
-**Core** — required for any RSC app
+This collection includes the active `friction-log` skill only. The old passive `friction-report` skill is intentionally not included.
 
-- `references/feature-folders.md`
-- `references/queries-actions.md`
-- `references/components.md`
-- `references/pages-suspense.md`
-
-**Instant Apps** — opt-in patterns for making the app feel instant
-
-- `references/cache-components.md`
-- `references/ux-patterns.md`
+Skill path: [`skills/friction-log`](skills/friction-log)
 
 ## Companion
 
