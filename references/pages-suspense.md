@@ -264,22 +264,34 @@ Fixes:
 
 To audit CLS, use React DevTools' Suspense panel to pin each boundary in its loading state and check vertical positions.
 
-## Opt-in runtime prefetch for high-value routes
+## Opt-in prefetch for high-value routes
 
-Next.js 16.3 turns on [**Partial Prefetching**](https://nextjs.org/docs/canary/app/guides/adopting-partial-prefetching) by default: links in the viewport prepare the destination's reusable [App Shell](https://nextjs.org/docs/canary/app/glossary#app-shell) so the navigation commits instantly, even before per-request data lands. For routes where you also want the framework to prefetch per-request data behind `params`, `searchParams`, `cookies()`, `headers()`, or `'use cache: private'`, opt the segment in at the route level:
+With [`cacheComponents`](https://nextjs.org/docs/canary/app/api-reference/config/next-config-js/cacheComponents) and [`partialPrefetching`](https://nextjs.org/docs/canary/app/api-reference/config/next-config-js/partialPrefetching) enabled, a visible `<Link>` prefetches the destination's reusable [App Shell](https://nextjs.org/docs/canary/app/glossary#app-shell): shared layouts, Suspense fallbacks, and cached content that does not depend on the specific URL. The shell is enough to commit the navigation instantly. Link-specific content streams in after the click.
 
-```tsx
-// app/feed/page.tsx
-export const prefetch = 'allow-runtime';
+```ts
+// next.config.ts
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+  partialPrefetching: true,
+};
+
+export default nextConfig;
 ```
 
-See the [`prefetch` route segment config](https://nextjs.org/docs/canary/app/api-reference/file-conventions/route-segment-config/prefetch) docs for the full option matrix (`'auto'`, `'allow-runtime'`, `'force-static'`, `'force-disabled'`). The export only works when [`cacheComponents`](https://nextjs.org/docs/canary/app/api-reference/config/next-config-js/cacheComponents) is enabled.
+If you cannot enable `partialPrefetching` app-wide yet, opt in per route with `prefetch = 'partial'` on the destination segment. Remove the per-route exports once the global flag is on.
 
-### Pair with `<Link prefetch={true}>` at the call site
+```tsx
+// app/products/[slug]/page.tsx
+export const prefetch = 'partial';
+```
 
-The route segment config tells Next.js what kind of prefetch a segment _can_ produce; the [`<Link prefetch>` prop](https://nextjs.org/docs/canary/app/api-reference/components/link#prefetch) reflects how _this particular link_ wants to use it.
+Three separate knobs control how much more gets prefetched.
 
-With Partial Prefetching on, `<Link>`'s default (`'auto'`) only prefetches the per-route App Shell, not the destination's content. To also fetch the cached page body (and, on `allow-runtime` segments, the runtime prerender) ahead of the click, set `prefetch={true}` explicitly:
+### 1. `<Link prefetch={true}>` to prefetch cached page content
+
+The [`<Link prefetch>` prop](https://nextjs.org/docs/canary/app/api-reference/components/link#prefetch) is per-link intent. Under Partial Prefetching, the default (`'auto'`) fetches the App Shell. Setting `prefetch={true}` tells Next.js this link is worth more work: prefetch the App Shell plus cached page content (`'use cache'` results and static body).
 
 ```tsx
 <Link href="/feed" prefetch={true}>
@@ -287,11 +299,28 @@ With Partial Prefetching on, `<Link>`'s default (`'auto'`) only prefetches the p
 </Link>
 ```
 
-The pairing is intentional: explicit on the link, explicit on the page. Use `prefetch={false}` to deprioritize links that are rarely clicked even when their destination has a cheap shell.
+This does not prefetch per-link runtime data. Values that depend on `params`, `searchParams`, or the full URL still wait until the click unless the destination also opts into runtime prefetching. Use `prefetch={false}` to skip prefetching for links that are rarely clicked.
+
+### 2. `prefetch = 'allow-runtime'` to allow per-link runtime data
+
+The [`prefetch` route segment config](https://nextjs.org/docs/canary/app/api-reference/file-conventions/route-segment-config/prefetch) sets the destination's cost ceiling. `prefetch = 'allow-runtime'` lets an eager link prefetch a runtime prerender that resolves per-link data: `params`, `searchParams`, and the full URL. Cookies and headers do not need `'allow-runtime'`; routes that read them include that session data in the App Shell.
+
+```tsx
+// app/track/[id]/page.tsx
+export const prefetch = 'allow-runtime';
+```
+
+Pair this with `prefetch={true}` on links where runtime data is worth resolving before the click:
+
+```tsx
+<Link href={`/track/${id}`} prefetch={true}>
+  Track
+</Link>
+```
 
 ### Cost and when to reach for it
 
-Each `prefetch = 'allow-runtime'` page runs a full render in the background for every `<Link prefetch={true}>` that enters the viewport, including the runtime data fetch. That costs server CPU and database load. Reserve the opt-in for high-value navigation targets (feed, detail pages) and let the rest of the app ride on the default static shell prefetch.
+Each visible `<Link prefetch={true}>` to an `'allow-runtime'` destination can wake the server for a runtime prerender. That cost only pays off when useful UI depends on per-link runtime data and can be resolved before navigation. Reserve it for routes users predictably visit next, and let the rest ride on the App Shell.
 
 To validate that the navigation actually feels instant once you've opted in, see the [`instant` route segment config](https://nextjs.org/docs/canary/app/api-reference/file-conventions/route-segment-config/instant) and the [Instant Navigation guide](https://nextjs.org/docs/canary/app/guides/instant-navigation).
 
