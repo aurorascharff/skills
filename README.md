@@ -5,7 +5,7 @@ A `/skills` directory for agent skills I maintain.
 ## Install
 
 ```bash
-npx skills@latest add aurorascharff/nextjs-app-architecture-skill
+npx skills add aurorascharff/skills
 ```
 
 ## Skills

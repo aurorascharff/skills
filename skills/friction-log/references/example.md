@@ -12,7 +12,7 @@
 
 ## Prompt
 
-> Build a Next.js product grid and detail page. Clicking a thumbnail should morph into the detail image using React's <ViewTransition> component. Going back should reverse it. Use this skill: https://github.com/aurorascharff/nextjs-app-architecture-skill/tree/main/skills/friction-log
+> Build a Next.js product grid and detail page. Clicking a thumbnail should morph into the detail image using React's <ViewTransition> component. Going back should reverse it. Use this skill: https://github.com/aurorascharff/skills/tree/main/skills/friction-log
 
 ---
 
