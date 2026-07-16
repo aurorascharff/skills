@@ -1,6 +1,10 @@
 ---
 name: friction-log
 description: Document agentic developer experience friction encountered during a development flow — captures where agents get stuck, which also surfaces DX issues for developers. Use when asked to "log friction", "document a pain point", "write a friction log", or when the agent hits confusion, dead ends, unclear docs, or unexpected blockers. Produces a structured friction log in markdown.
+license: MIT
+metadata:
+  author: aurorascharff
+  version: '1.0.0'
 ---
 
 # Friction Log
