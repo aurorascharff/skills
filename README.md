@@ -2,12 +2,6 @@
 
 A `/skills` directory for agent skills I maintain.
 
-## Install
-
-```bash
-npx skills add aurorascharff/skills
-```
-
 ## Skills
 
 ### `nextjs-app-architecture`
@@ -23,6 +17,12 @@ The five principles from the post:
 - Client boundaries are leaf nodes. Push `'use client'` as deep as it can go.
 
 Skill path: [`skills/nextjs-app-architecture`](skills/nextjs-app-architecture)
+
+Install:
+
+```bash
+npx skills add aurorascharff/skills/skills/nextjs-app-architecture
+```
 
 References load on demand:
 
@@ -40,6 +40,12 @@ Documents agentic developer experience friction encountered during a development
 This collection includes the active `friction-log` skill only. The old passive `friction-report` skill is intentionally not included.
 
 Skill path: [`skills/friction-log`](skills/friction-log)
+
+Install:
+
+```bash
+npx skills add aurorascharff/skills/skills/friction-log
+```
 
 ## Companion
 
