@@ -4,7 +4,7 @@ How to build server and client components inside a feature folder.
 
 ## Default: async server component
 
-Server components await their own queries directly — no `useEffect`, no client-side fetching, no manual loading state. See the [Server Components docs](https://nextjs.org/docs/app/getting-started/server-and-client-components) for the model.
+Server components await their own queries directly — no `useEffect`, no client-side fetching, no manual loading state. See the [Server Components docs](https://preview.nextjs.org/docs/app/getting-started/server-and-client-components) for the model.
 
 ```tsx
 // features/notifications/components/notifications-badge.tsx
@@ -178,7 +178,7 @@ The opinionated bit: name promise props with a `Promise` suffix (`itemsPromise`,
 
 ## Live data via polling
 
-For features that reflect server-side updates without user action (other users posting, new notifications, vote counts changing), drop a `<Poller>` client component into the page that calls [`router.refresh()`](https://nextjs.org/docs/app/api-reference/functions/use-router) on an interval. The router re-renders the server components for the current user; cached queries (if any) return stale data until they expire.
+For features that reflect server-side updates without user action (other users posting, new notifications, vote counts changing), drop a `<Poller>` client component into the page that calls [`router.refresh()`](https://preview.nextjs.org/docs/app/api-reference/functions/use-router) on an interval. The router re-renders the server components for the current user; cached queries (if any) return stale data until they expire.
 
 ## Mutations
 

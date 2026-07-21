@@ -12,7 +12,7 @@ Pages in `app/` import feature components and place `<Suspense>` boundaries. The
 
 ## Page function signatures
 
-Type page and layout functions with the generated `PageProps<'/route'>` and `LayoutProps<'/route'>` helpers — they're emitted by [`typedRoutes`](https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes) and give you the correct `params` / `searchParams` / `children` shape for that exact route.
+Type page and layout functions with the generated `PageProps<'/route'>` and `LayoutProps<'/route'>` helpers — they're emitted by [`typedRoutes`](https://preview.nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes) and give you the correct `params` / `searchParams` / `children` shape for that exact route.
 
 ```tsx
 // app/post/[id]/page.tsx
@@ -79,7 +79,7 @@ export default function ProfilePage({ params, searchParams }: PageProps<'/u/[han
 
 ### `generateMetadata` can await directly
 
-[`generateMetadata`](https://nextjs.org/docs/app/api-reference/functions/generate-metadata) runs before the page renders, so `await params` is fine there:
+[`generateMetadata`](https://preview.nextjs.org/docs/app/api-reference/functions/generate-metadata) runs before the page renders, so `await params` is fine there:
 
 ```tsx
 export async function generateMetadata({ params }: PageProps<'/post/[id]'>): Promise<Metadata> {
@@ -91,7 +91,7 @@ export async function generateMetadata({ params }: PageProps<'/post/[id]'>): Pro
 
 ### `generateStaticParams` for dynamic routes
 
-For `[slug]`-style routes, export [`generateStaticParams`](https://nextjs.org/docs/app/api-reference/functions/generate-static-params) from the page or layout to pre-build a known set of pages. Combined with `cacheComponents` and `'use cache'` on the queries, every listed slug ends up in the static shell:
+For `[slug]`-style routes, export [`generateStaticParams`](https://preview.nextjs.org/docs/app/api-reference/functions/generate-static-params) from the page or layout to pre-build a known set of pages. Combined with `cacheComponents` and `'use cache'` on the queries, every listed slug ends up in the static shell:
 
 ```tsx
 import { getEvents } from '@/features/event/event-queries';
@@ -106,7 +106,7 @@ The gotcha: `generateStaticParams` does **not** change the page function signatu
 
 ### `notFound()` from queries
 
-When a query can't find the resource, call [`notFound()`](https://nextjs.org/docs/app/api-reference/functions/not-found):
+When a query can't find the resource, call [`notFound()`](https://preview.nextjs.org/docs/app/api-reference/functions/not-found):
 
 ```ts
 import { notFound } from 'next/navigation';
@@ -118,7 +118,7 @@ export const getEventBySlug = cache(async (slug: string) => {
 });
 ```
 
-It bubbles to the nearest [`not-found.tsx`](https://nextjs.org/docs/app/api-reference/file-conventions/not-found). Don't wrap it in a try/catch — use [`unstable_rethrow`](https://nextjs.org/docs/app/api-reference/functions/unstable_rethrow) from `next/navigation` if you need to.
+It bubbles to the nearest [`not-found.tsx`](https://preview.nextjs.org/docs/app/api-reference/file-conventions/not-found). Don't wrap it in a try/catch — use [`unstable_rethrow`](https://preview.nextjs.org/docs/app/api-reference/functions/unstable_rethrow) from `next/navigation` if you need to.
 
 ## The page owns the Suspense boundary
 
@@ -225,7 +225,7 @@ import ErrorBoundary from '@/components/ui/error-boundary';
 
 Why not plain `react-error-boundary`? It catches Next's framework throws (so `notFound()` never reaches `not-found.tsx`), and `resetErrorBoundary` doesn't re-fetch server data. For background, see [Error Handling in Next.js with catchError](https://aurorascharff.no/posts/error-handling-in-nextjs-with-catch-error/).
 
-Pair component-level boundaries with [`error.tsx`](https://nextjs.org/docs/app/api-reference/file-conventions/error) at the route segment for unrecoverable errors. `error.tsx` also receives an `unstable_retry` callback you can wire to a button.
+Pair component-level boundaries with [`error.tsx`](https://preview.nextjs.org/docs/app/api-reference/file-conventions/error) at the route segment for unrecoverable errors. `error.tsx` also receives an `unstable_retry` callback you can wire to a button.
 
 ## Layout-level Suspense
 
@@ -266,7 +266,7 @@ To audit CLS, use React DevTools' Suspense panel to pin each boundary in its loa
 
 ## Opt-in prefetch for high-value routes
 
-With [`cacheComponents`](https://nextjs.org/docs/canary/app/api-reference/config/next-config-js/cacheComponents) and [`partialPrefetching`](https://nextjs.org/docs/canary/app/api-reference/config/next-config-js/partialPrefetching) enabled, a visible `<Link>` prefetches the destination's reusable [App Shell](https://nextjs.org/docs/canary/app/glossary#app-shell): shared layouts, Suspense fallbacks, and cached content that does not depend on the specific URL. The shell is enough to commit the navigation instantly. Link-specific content streams in after the click.
+With [`cacheComponents`](https://preview.nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents) and [`partialPrefetching`](https://preview.nextjs.org/docs/app/api-reference/config/next-config-js/partialPrefetching) enabled, a visible `<Link>` prefetches the destination's reusable [App Shell](https://preview.nextjs.org/docs/app/glossary#app-shell): shared layouts, Suspense fallbacks, and cached content that doesn't depend on the specific URL. One shell is shared across every link to that route, so it's cheap — and it's enough to commit the navigation instantly. Link-specific content streams in after the click.
 
 ```ts
 // next.config.ts
@@ -280,18 +280,13 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 ```
 
-If you cannot enable `partialPrefetching` app-wide yet, opt in per route with `prefetch = 'partial'` on the destination segment. Remove the per-route exports once the global flag is on.
+If you can't enable `partialPrefetching` app-wide yet, opt in per route with `export const prefetch = 'partial'` on the destination segment, then remove the per-route exports once the global flag is on. Full option list: [prefetch segment config](https://preview.nextjs.org/docs/app/api-reference/file-conventions/route-segment-config/prefetch).
 
-```tsx
-// app/products/[slug]/page.tsx
-export const prefetch = 'partial';
-```
+The default (`'auto'`) already fetches the shared App Shell, so don't write `prefetch = 'auto'` explicitly. From that baseline you adjust in two directions.
 
-Three separate knobs control how much more gets prefetched.
+### Prefetch more: `prefetch={true}` + `prefetch = 'allow-runtime'`
 
-### 1. `<Link prefetch={true}>` to prefetch cached page content
-
-The [`<Link prefetch>` prop](https://nextjs.org/docs/canary/app/api-reference/components/link#prefetch) is per-link intent. Under Partial Prefetching, the default (`'auto'`) fetches the App Shell. Setting `prefetch={true}` tells Next.js this link is worth more work: prefetch the App Shell plus cached page content (`'use cache'` results and static body).
+Set `<Link prefetch={true}>` on high-value links to also pull the destination's cached page content:
 
 ```tsx
 <Link href="/feed" prefetch={true}>
@@ -299,18 +294,12 @@ The [`<Link prefetch>` prop](https://nextjs.org/docs/canary/app/api-reference/co
 </Link>
 ```
 
-This does not prefetch per-link runtime data. Values that depend on `params`, `searchParams`, or the full URL still wait until the click unless the destination also opts into runtime prefetching. Use `prefetch={false}` to skip prefetching for links that are rarely clicked.
-
-### 2. `prefetch = 'allow-runtime'` to allow per-link runtime data
-
-The [`prefetch` route segment config](https://nextjs.org/docs/canary/app/api-reference/file-conventions/route-segment-config/prefetch) sets the destination's cost ceiling. `prefetch = 'allow-runtime'` lets an eager link prefetch a runtime prerender that resolves per-link data: `params`, `searchParams`, and the full URL. Cookies and headers do not need `'allow-runtime'`; routes that read them include that session data in the App Shell.
+That still doesn't resolve per-link runtime data. Values that depend on `params`, `searchParams`, or the full URL wait until the click unless the destination also opts in with `export const prefetch = 'allow-runtime'`:
 
 ```tsx
 // app/track/[id]/page.tsx
 export const prefetch = 'allow-runtime';
 ```
-
-Pair this with `prefetch={true}` on links where runtime data is worth resolving before the click:
 
 ```tsx
 <Link href={`/track/${id}`} prefetch={true}>
@@ -318,11 +307,13 @@ Pair this with `prefetch={true}` on links where runtime data is worth resolving 
 </Link>
 ```
 
-### Cost and when to reach for it
+Each such visible link can wake the server for a runtime prerender, so reserve it for routes users predictably visit next and let the rest ride on the App Shell. See [runtime prefetching](https://preview.nextjs.org/docs/app/guides/runtime-prefetching). (The `'allow-runtime'` API is expected to change soon; use it as-is for now.)
 
-Each visible `<Link prefetch={true}>` to an `'allow-runtime'` destination can wake the server for a runtime prerender. That cost only pays off when useful UI depends on per-link runtime data and can be resolved before navigation. Reserve it for routes users predictably visit next, and let the rest ride on the App Shell.
+### Prefetch nothing: rarely what you want
 
-To validate that the navigation actually feels instant once you've opted in, see the [`instant` route segment config](https://nextjs.org/docs/canary/app/api-reference/file-conventions/route-segment-config/instant) and the [Instant Navigation guide](https://nextjs.org/docs/canary/app/guides/instant-navigation).
+`<Link prefetch={false}>` — or `export const prefetch = 'force-disabled'` on the segment — skips prefetching entirely, including the App Shell, so you forfeit instant navigation. The App Shell is cheap and shared across every link to the route, so turning it off almost never pays off. Don't reach for it just because a route is low-value; leave those at the default. Reserve it for routes that should genuinely never prefetch, like rarely-visited pages behind auth.
+
+To validate that navigation actually feels instant once you've opted in, see the [`instant` route segment config](https://preview.nextjs.org/docs/app/api-reference/file-conventions/route-segment-config/instant) and the [Instant Navigation guide](https://preview.nextjs.org/docs/app/guides/instant-navigation).
 
 ## Never wrap the entire page in a Suspense fallback
 

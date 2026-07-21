@@ -236,7 +236,7 @@ export async function Feed({ page = 1 }: { page?: number }) {
 }
 ```
 
-The "Load more" button uses [`<Link scroll={false}>`](https://nextjs.org/docs/app/api-reference/components/link) (or `router.push(url, { scroll: false })` inside `startTransition`). Each page is a separate request; the cache layer handles dedup.
+The "Load more" button uses [`<Link scroll={false}>`](https://preview.nextjs.org/docs/app/api-reference/components/link) (or `router.push(url, { scroll: false })` inside `startTransition`). Each page is a separate request; the cache layer handles dedup.
 
 ## Global client state
 

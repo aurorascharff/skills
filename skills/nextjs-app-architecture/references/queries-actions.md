@@ -47,7 +47,7 @@ export async function createPost(formData: FormData) {
 }
 ```
 
-[`refresh()`](https://nextjs.org/docs/app/api-reference/functions/refresh) re-renders the current route for the current user. With Cache Components, you'd swap this for `updateTag('feed')` to invalidate everything tagged `feed` and get read-your-own-writes across users — see `references/cache-components.md`.
+[`refresh()`](https://preview.nextjs.org/docs/app/api-reference/functions/refresh) re-renders the current route for the current user. With Cache Components, you'd swap this for `updateTag('feed')` to invalidate everything tagged `feed` and get read-your-own-writes across users — see `references/cache-components.md`.
 
 ### Action file naming
 

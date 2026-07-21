@@ -1,6 +1,6 @@
 # Cache Components
 
-The model and constraints when [`cacheComponents: true`](https://nextjs.org/docs/canary/app/api-reference/config/next-config-js/cacheComponents) is set in `next.config.ts`.
+The model and constraints when [`cacheComponents: true`](https://preview.nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents) is set in `next.config.ts`.
 
 ## When to enable it
 
@@ -34,7 +34,9 @@ With this flag set:
 
 - **Static shell** — synchronous content, `'use cache'` components, and Suspense fallbacks prerender **at build time**.
 - **Dynamic holes** — async components without `'use cache'` stream in behind `<Suspense>` at request time.
-- **Build constraint** — any async work without `'use cache'` must sit inside `<Suspense>`, or the build fails with "this component performs dynamic work outside a Suspense boundary."
+- **Build constraint** — any async work without `'use cache'` must sit inside `<Suspense>`, or the build fails. Fix it by wrapping the component in `<Suspense>` or adding `'use cache'`.
+
+Two things follow from the flag in Next 16. `cacheComponents` **implies Partial Prerendering** — it's the single switch that replaced the old `experimental.ppr`, `experimental.dynamicIO`, and `experimental.useCache` flags, so don't set those. And navigation preserves state via React [`<Activity>`](https://react.dev/reference/react/Activity): a route you leave is hidden rather than unmounted, so its state survives when you return. See [caching](https://preview.nextjs.org/docs/app/getting-started/caching) and [preserving UI state](https://preview.nextjs.org/docs/app/guides/preserving-ui-state).
 
 ## Pages stay synchronous
 
@@ -59,13 +61,11 @@ export const getFeed = cache(async (userId: string) => {
 });
 ```
 
-- `'use cache'` makes the query result cacheable across requests.
-- `cacheTag` adds invalidation tags. Use both a global tag and a scoped one for flexible invalidation.
-- `cacheLife` sets the staleness profile (`'seconds'`, `'minutes'`, `'hours'`, custom).
+`'use cache'` makes the result cacheable across requests. [`cacheTag`](https://preview.nextjs.org/docs/app/api-reference/functions/cacheTag) adds invalidation tags — use both a global tag and a scoped one for flexible invalidation. [`cacheLife`](https://preview.nextjs.org/docs/app/api-reference/config/next-config-js/cacheLife) sets the staleness profile (`'seconds'`, `'minutes'`, `'hours'`, or custom).
 
 ### `'use cache: private'`
 
-If the query reads cookies, headers, or session data, use `'use cache: private'` instead. The cache is scoped per user.
+If the query reads cookies, headers, or session data, use [`'use cache: private'`](https://preview.nextjs.org/docs/app/api-reference/directives/use-cache-private) instead. Results are cached only in the user's browser for the session — never stored on the server.
 
 ```ts
 export const getNotifications = cache(async () => {
@@ -92,7 +92,7 @@ export const getRepo = cache(async (owner: string, name: string) => {
 
 ### Opting back into dynamic with `connection()`
 
-For a single query that must always run per request, call [`connection()`](https://nextjs.org/docs/app/api-reference/functions/connection) from `next/server` first. The surrounding render becomes dynamic, so the calling component must sit inside a `<Suspense>` boundary:
+For a single query that must always run per request, call [`connection()`](https://preview.nextjs.org/docs/app/api-reference/functions/connection) from `next/server` first. The surrounding render becomes dynamic, so the calling component must sit inside a `<Suspense>` boundary:
 
 ```ts
 import 'server-only';
@@ -174,9 +174,9 @@ Watch for these errors:
 
 If `cacheComponents` is not enabled:
 
-- Don't use `'use cache'`, [`cacheTag`](https://nextjs.org/docs/canary/app/api-reference/functions/cacheTag), or [`cacheLife`](https://nextjs.org/docs/canary/app/api-reference/config/next-config-js/cacheLife) — they require the flag.
+- Don't use `'use cache'`, [`cacheTag`](https://preview.nextjs.org/docs/app/api-reference/functions/cacheTag), or [`cacheLife`](https://preview.nextjs.org/docs/app/api-reference/config/next-config-js/cacheLife) — they require the flag.
 - Keep `cache()` from React for per-request dedup.
-- Invalidate via [`refresh()`](https://nextjs.org/docs/canary/app/api-reference/functions/refresh) from server actions instead of `updateTag()`. `refresh()` re-renders the route for the current user.
+- Invalidate via [`refresh()`](https://preview.nextjs.org/docs/app/api-reference/functions/refresh) from server actions instead of `updateTag()`. `refresh()` re-renders the route for the current user.
 - Pages can use `await params` or `params.then()` — either works. `params.then()` still helps unrelated chrome paint faster, but there's no build-time prerender to preserve.
 
 The rest of the architecture (feature folders, async server components, Suspense at the page) works identically.
