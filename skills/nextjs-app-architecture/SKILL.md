@@ -53,7 +53,7 @@ These rules apply to every change. If you violate one, you'll fight the framewor
 - **Actions live in `<domain>-actions.ts`** with `'use server'` at the top. The file name matches the folder, even when the mutation targets a sub-concept. See `references/feature-folders.md` and `references/queries-actions.md`.
 - **Async server component is the default.** Add `'use client'` only when you need hooks, event handlers, or browser APIs. See `references/components.md`.
 - **The page owns the Suspense boundary; the feature owns the skeleton.** Don't pre-wrap components in `<Suspense>` inside the feature. See `references/pages-suspense.md`.
-- **Skeletons live in the same file as the component.** `Feed` and `FeedSkeleton` are sibling exports. See `references/components.md`.
+- **Skeletons live in the same file as the component**, defined at the end of the file below the real component(s). `Feed` and `FeedSkeleton` are sibling exports. See `references/components.md`.
 - **Single-use sub-components stay inlined as non-exported functions** in the same file. Exports are for things other files import. See `references/components.md`.
 
 ## Decision flow for a new feature

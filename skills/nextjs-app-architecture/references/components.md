@@ -27,7 +27,7 @@ Wrapped at the page or layout level with Suspense:
 
 ## Skeletons live in the same file
 
-Export the main component and its skeleton from the same file. Pages import both.
+Export the main component and its skeleton from the same file. Pages import both. Define the skeleton **at the end of the file**, below the real component(s) — never above. Function declarations are hoisted, so a skeleton referenced by a component earlier in the file still works when defined last.
 
 ```tsx
 export async function Feed({ userId }: { userId: string }) {
