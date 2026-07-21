@@ -79,7 +79,7 @@ export const getNotifications = cache(async () => {
 
 ### `'use cache: remote'`
 
-For data fetched from a remote service (third-party API, public endpoint) that's safe to cache across users and durable beyond the local edge, use `'use cache: remote'`. Useful for protecting yourself against rate-limited APIs (GitHub, payment providers, geocoders).
+For data from a remote service (third-party API, public endpoint) that's safe to cache across users and worth storing durably beyond the local edge, use [`'use cache: remote'`](https://preview.nextjs.org/docs/app/api-reference/directives/use-cache-remote). Useful for protecting against rate-limited APIs (GitHub, payment providers, geocoders).
 
 ```ts
 export const getRepo = cache(async (owner: string, name: string) => {
@@ -140,8 +140,8 @@ Don't `'use cache'` on a component that internally calls a `'use cache'`d query 
 
 ## Invalidation: `updateTag` vs `revalidateTag`
 
-- **`updateTag(tag)`** — invalidates immediately and re-renders for read-your-own-writes. Use inside **server actions** when the user expects to see the result.
-- **`revalidateTag(tag)`** — stale-while-revalidate. Use in **route handlers** (webhooks, cron) where you don't need an immediate UI update.
+- **[`updateTag(tag)`](https://preview.nextjs.org/docs/app/api-reference/functions/updateTag)** — invalidates immediately and re-renders for read-your-own-writes. Use inside **server actions** when the user expects to see the result.
+- **[`revalidateTag(tag)`](https://preview.nextjs.org/docs/app/api-reference/functions/revalidateTag)** — stale-while-revalidate. Use in **route handlers** (webhooks, cron) where you don't need an immediate UI update.
 
 ```ts
 'use server';
@@ -157,18 +157,13 @@ The `cacheTag` in the query and the `updateTag` in the action live in the same f
 
 ## Build behavior
 
-When you run `next build` with `cacheComponents: true`:
+`next build` prerenders every page: synchronous content, `'use cache'` results, and Suspense fallbacks bake into the static output, while dynamic holes render and stream per request. Three common build failures each map to a skill rule:
 
-1. Next runs every page through prerendering.
-2. Synchronous content + `'use cache'` results + Suspense fallbacks are baked into the static output.
-3. Anything async without `'use cache'` and without an ancestor `<Suspense>` causes a build error.
-4. Per request, dynamic holes are rendered and streamed in.
+- Async work without `'use cache'` and without an ancestor `<Suspense>` → wrap it in `<Suspense>` or add `'use cache'`.
+- Reading cookies/headers inside `'use cache'` → switch to `'use cache: private'`.
+- `params` accessed at the top level of the page → convert `await params` to `params.then()`.
 
-Watch for these errors:
-
-- **"Async work outside Suspense boundary"** — wrap the offending component in `<Suspense>` or add `'use cache'`.
-- **"Cannot read cookies/headers inside `'use cache'`"** — switch to `'use cache: private'`.
-- **"params accessed at the top level of the page"** — convert `await params` to `params.then()`.
+See [caching](https://preview.nextjs.org/docs/app/getting-started/caching) for the full prerendering model.
 
 ## Without Cache Components
 
